@@ -3,9 +3,11 @@ package fr.angelsky.angelskyproxy;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import fr.angelsky.angelskyproxy.managers.ProxyManager;
 import org.slf4j.Logger;
 
@@ -38,6 +40,11 @@ public class AngelSkyProxy {
         this.proxyManager = new ProxyManager(this);
         proxyManager.load();
         logger.info("Proxy loaded!");
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        getServer().getScheduler().tasksByPlugin(this).forEach(ScheduledTask::cancel);
     }
 
     public ProxyManager getProxyManager() {
