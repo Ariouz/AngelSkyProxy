@@ -1,9 +1,10 @@
-package fr.angelsky.angelskyproxy.discord;
+package fr.angelsky.angelskyproxy.discord.managers;
 
 import fr.angelsky.angelskyproxy.AngelSkyProxy;
-import fr.angelsky.angelskyproxy.discord.listeners.commands.LinkingPlayer;
+import fr.angelsky.angelskyproxy.discord.AngelBot;
+import fr.angelsky.angelskyproxy.discord.IDS;
+import fr.angelsky.angelskyproxy.discord.listeners.commands.link.LinkingPlayer;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
@@ -65,9 +66,10 @@ public class DiscordLinkManager {
         return null;
     }
 
-    public void completeLinking(User user) {
+    public void completeLinking(User user, String playerName) {
         LinkingPlayer lp = getLinkingPlayer(user);
         lp.getGuild().addRoleToMember(user, Objects.requireNonNull(lp.getGuild().getRoleById(IDS.ACCOUNT_LINKED_ROLE.getId()))).queue();
+        angelSkyProxy.getProxyManager().getSqlManager().getSqlDiscordLink().linkUser(user, playerName);
     }
 
     public boolean isLinked(User user, Guild guild)

@@ -1,4 +1,4 @@
-package fr.angelsky.angelskyproxy.discord.listeners.commands;
+package fr.angelsky.angelskyproxy.discord.listeners.commands.link;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;

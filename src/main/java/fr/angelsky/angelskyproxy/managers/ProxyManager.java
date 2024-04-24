@@ -1,13 +1,13 @@
 package fr.angelsky.angelskyproxy.managers;
 
+import com.github.smuddgge.squishyconfiguration.implementation.YamlConfiguration;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
-import com.velocitypowered.api.proxy.ProxyServer;
 import fr.angelsky.angelskyproxy.AngelSkyProxy;
 import fr.angelsky.angelskyproxy.commands.LinkCommand;
 import fr.angelsky.angelskyproxy.discord.AngelBot;
-import fr.angelsky.angelskyproxy.discord.DiscordLinkManager;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import fr.angelsky.angelskyproxy.discord.managers.DiscordLinkManager;
+import fr.angelsky.angelskyproxy.managers.sql.SQLManager;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -18,6 +18,8 @@ public class ProxyManager {
     private final AngelBot angelBot;
 
     private DiscordLinkManager discordLinkManager;
+    private SQLManager sqlManager;
+    private YamlConfiguration config;
 
     public ProxyManager(AngelSkyProxy angelSkyProxy)
     {
@@ -28,6 +30,8 @@ public class ProxyManager {
     public void load()
     {
         setupDataDirectory(angelSkyProxy.getDataDirectory());
+        this.loadConfig(angelSkyProxy.getDataDirectory());
+        this.sqlManager = new SQLManager(angelSkyProxy);
         this.angelBot.loadBot();
         this.discordLinkManager = new DiscordLinkManager(angelSkyProxy, angelBot);
         registerCommands();
@@ -49,11 +53,25 @@ public class ProxyManager {
                 angelSkyProxy.getLogger().info("DatDirectory created");
     }
 
+    private void loadConfig(Path path)
+    {
+        this.config = new YamlConfiguration(path.toFile(), "config.yml");
+        this.config.load();
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
     public DiscordLinkManager getDiscordLinkManager() {
         return discordLinkManager;
     }
 
     public AngelBot getAngelBot() {
         return angelBot;
+    }
+
+    public SQLManager getSqlManager() {
+        return sqlManager;
     }
 }

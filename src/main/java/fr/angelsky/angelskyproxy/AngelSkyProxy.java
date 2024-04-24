@@ -44,6 +44,7 @@ public class AngelSkyProxy {
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
+        proxyManager.getAngelBot().getJda().shutdown();
         getServer().getScheduler().tasksByPlugin(this).forEach(ScheduledTask::cancel);
     }
 

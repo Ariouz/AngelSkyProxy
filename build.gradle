@@ -9,6 +9,7 @@ group = 'fr.angelsky'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = "papermc-repo"
@@ -16,6 +17,7 @@ repositories {
     }
     maven { url 'https://jitpack.io' }
     maven { url "https://plugins.gradle.org/m2/" }
+    maven { url 'https://repo1.maven.org/maven2/'}
 }
 
 dependencies {
@@ -23,6 +25,7 @@ dependencies {
     annotationProcessor "com.velocitypowered:velocity-api:3.3.0-SNAPSHOT"
     implementation ("net.dv8tion:JDA:5.0.0-beta.22")
     implementation 'com.github.Smuddgge:SquishyYaml:2.0.1'
+    implementation "com.mysql:mysql-connector-j:8.3.0"
 }
 
 def targetJavaVersion = 17
@@ -42,21 +45,3 @@ tasks.withType(JavaCompile).configureEach {
         options.release.set(targetJavaVersion)
     }
 }
-
-def templateSource = file('src/main/templates')
-def templateDest = layout.buildDirectory.dir('generated/sources/templates')
-def generateTemplates = tasks.register('generateTemplates', Copy) { task ->
-    def props = [
-            'version': project.version
-    ]
-    task.inputs.properties props
-
-    task.from templateSource
-    task.into templateDest
-    task.expand props
-}
-
-sourceSets.main.java.srcDir(generateTemplates.map { it.outputs })
-
-rootProject.idea.project.settings.taskTriggers.afterSync generateTemplates
-project.eclipse.synchronizationTasks(generateTemplates)

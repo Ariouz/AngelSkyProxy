@@ -1,7 +1,6 @@
 package fr.angelsky.angelskyproxy.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
@@ -10,13 +9,10 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import fr.angelsky.angelskyproxy.AngelSkyProxy;
 import fr.angelsky.angelskyproxy.discord.AngelBot;
-import fr.angelsky.angelskyproxy.discord.DiscordLinkManager;
-import fr.angelsky.angelskyproxy.discord.listeners.commands.LinkCommandListener;
-import fr.angelsky.angelskyproxy.discord.listeners.commands.LinkingPlayer;
+import fr.angelsky.angelskyproxy.discord.managers.DiscordLinkManager;
 import net.dv8tion.jda.api.entities.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.checkerframework.checker.units.qual.C;
 
 
 public class LinkCommand {
@@ -55,11 +51,17 @@ public class LinkCommand {
                         return Command.SINGLE_SUCCESS;
                     }
 
+                    if (angelSkyProxy.getProxyManager().getSqlManager().getSqlDiscordLink().isLinked(player.getUsername()))
+                    {
+                        source.sendMessage(Component.text("Votre compte est déja lié.", NamedTextColor.RED));
+                        return Command.SINGLE_SUCCESS;
+                    }
+
                     User user = discordLinkManager.getUserByCode(code);
                     user.openPrivateChannel().complete().sendMessage("Votre compte a été lié au joueur " + player.getUsername()).queue();
                     Component message = Component.text("Votre compte discord "+user.getName()+" a bien été lié.", NamedTextColor.GREEN);
                     source.sendMessage(message);
-                    discordLinkManager.completeLinking(user);
+                    discordLinkManager.completeLinking(user, player.getUsername());
                     discordLinkManager.getLinkingPlayers().remove(discordLinkManager.getLinkingPlayer(user));
                     return Command.SINGLE_SUCCESS;
                 }))

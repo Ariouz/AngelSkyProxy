@@ -1,13 +1,13 @@
-package fr.angelsky.angelskyproxy.discord.listeners.commands;
+package fr.angelsky.angelskyproxy.discord.listeners.commands.link;
 
 import fr.angelsky.angelskyproxy.AngelSkyProxy;
 import fr.angelsky.angelskyproxy.discord.AngelBot;
-import fr.angelsky.angelskyproxy.discord.DiscordLinkManager;
+import fr.angelsky.angelskyproxy.discord.managers.DiscordLinkManager;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionType;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class LinkCommandListener extends ListenerAdapter {
@@ -32,13 +32,13 @@ public class LinkCommandListener extends ListenerAdapter {
 
             event.deferReply().queue();
 
-            if (event.getGuild() == null)
+            if (!event.isFromGuild())
             {
                 event.getHook().sendMessage("Cette commande doit être éxecutée dans un salon de commandes.").setEphemeral(true).queue();
                 return ;
             }
 
-            if (discordLinkManager.isLinked(user, event.getGuild()))
+            if (discordLinkManager.isLinked(user, Objects.requireNonNull(event.getGuild())))
             {
                 event.getHook().sendMessage("Votre compte est déja lié.").queue();
                 return ;
